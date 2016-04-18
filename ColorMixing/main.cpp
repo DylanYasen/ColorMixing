@@ -284,21 +284,23 @@ void HuePreservingBlend(GLfloat r1,GLfloat g1,GLfloat b1,GLfloat r2,GLfloat g2,G
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT);
-    ///glClear(gl_color)
-    // rendering
-    //DrawCircle(250,250, 50);
-    glColor4f(0.1,0.1,0.4,0.2);
+    
+    glEnable     (GL_BLEND);
+    glBlendFunc  (GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);
+  
+    glColor4f(0.1,0.1,0.4,0.5);
     DrawFilledCircle(200,250,100);
-    glColor4f(0.4,0.2,0.6,0.2);
+    
+    glColor4f(0.4,0.2,0.6,0.5);
     DrawFilledCircle(340,250,100);
     
     GLfloat r,g,b;
     HuePreservingBlend(0.1, 0.1, 0.4, 0.4, 0.2, 0.6, r, g, b);
+    
     glColor4f(r,g,b,0.2);
     DrawFilledCircle(270,350,100);
     
     glFlush();
-    glutPostRedisplay();
 }
 
 void reshape(int w, int h)
@@ -324,14 +326,17 @@ void keyboard(unsigned char key, int x, int y)
 int main(int argc, char **argv)
 {
     glutInit(&argc, argv);
-    glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
+    //glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
+    glutInitDisplayMode (GLUT_SINGLE | GLUT_RGBA);
     glutInitWindowSize (width, height);
     glutInitWindowPosition (100, 100);
     glutCreateWindow (argv[0]);
+    
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
     glutKeyboardFunc (keyboard);
     glutMainLoop();
+    
     return 0;
 }
 
