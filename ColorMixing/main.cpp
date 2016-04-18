@@ -18,8 +18,8 @@
 #include <GL/glut.h>
 #endif
 
-int width = 500;
-int height = 500;
+int width = 800;
+int height = 800;
 #define PI 3.1415926
 
 /*
@@ -308,7 +308,7 @@ void reshape(int w, int h)
     glViewport(0, 0, (GLsizei) w, (GLsizei) h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0.0, width, height, 0.0, -10.0, 10.0);
+    glOrtho(0.0, w, h, 0.0, -10.0, 10.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
@@ -326,7 +326,6 @@ void keyboard(unsigned char key, int x, int y)
 int main(int argc, char **argv)
 {
     glutInit(&argc, argv);
-    //glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
     glutInitDisplayMode (GLUT_SINGLE | GLUT_RGBA);
     glutInitWindowSize (width, height);
     glutInitWindowPosition (100, 100);
@@ -336,6 +335,7 @@ int main(int argc, char **argv)
     glutReshapeFunc(reshape);
     glutKeyboardFunc (keyboard);
     glutMainLoop();
+    
     
     return 0;
 }
