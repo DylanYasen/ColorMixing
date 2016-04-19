@@ -290,6 +290,41 @@ void HuePreservingBlend(GLfloat r1,GLfloat g1,GLfloat b1,GLfloat r2,GLfloat g2,G
     }
 }
 
+GLfloat radians(GLfloat deg){
+    return deg * (PI / 180);
+}
+
+GLfloat degrees(GLfloat radians){
+    return radians * (180 / PI);
+}
+
+
+//def drawPartialCircle(pos=(0,0), radius=100):
+//with gx_begin(GL_TRIANGLE_FAN):
+//glColor3f(0,0,1)
+//glVertex2f(0,0)
+//for angle in range (90,185,5):
+//glColor3f(sin(radians(angle-90))*sqrt(2),cos(radians(angle-90))*sqrt(2),0)
+//glVertex2f(int(cos(radians(angle))*radius),int(sin(radians(angle))*radius))
+
+void DrawColorCircle(GLfloat r = 100){
+    glBegin(GL_TRIANGLE_FAN);
+    for (int i = 90; i < 185; i+=5) {
+        glColor3f(sinf(radians(i - 90))*sqrtf(2), cosf(radians(i-90))*sqrtf(2), 0);
+        glVertex2f(cosf(radians(i))*r, sinf(radians(i))*r);
+    }
+    glEnd();
+}
+
+void DrawQuad(GLfloat w,GLfloat h){
+    glBegin(GL_QUADS);   //We want to draw a quad, i.e. shape with four sides
+    glVertex2f(0, 0);            //Draw the four corners of the rectangle
+    glVertex2f(0, h);
+    glVertex2f(w, h);
+    glVertex2f(w, 0);
+    glEnd();
+}
+
 void UpdateColorPickerViewport(){
  
     // Set The Viewport To The Top Left.
@@ -345,21 +380,39 @@ void RenderCustomBlendView(){
 
 void RenderGLBlendView(){
    
-   
     glEnable     (GL_BLEND);
     glBlendFunc  (GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);
     
+    // little offset
+    glPushMatrix();
+    glTranslatef(-30, -30, 0);
+    
+    glPushMatrix();
+    glTranslatef(150, 100, 0);
     glColor4f(0.1,0.1,0.4,0.5);
-    DrawFilledCircle(200,100,80);
+    DrawQuad(150,150);
+    glPopMatrix();
     
+    glPushMatrix();
+    glTranslatef(200, 200, 0);
+    glColor4f(0.2,0.7,0.1,0.5);
+    DrawQuad(150,150);
+    glPopMatrix();
+    
+    glPushMatrix();
+    glTranslatef(100, 150, 0);
     glColor4f(0.4,0.2,0.6,0.5);
-    DrawFilledCircle(250,100,80);
+    DrawQuad(150,150);
+    glPopMatrix();
     
-    GLfloat r,g,b;
-    HuePreservingBlend(0.1, 0.1, 0.4, 0.4, 0.2, 0.6, r, g, b);
-    
-    glColor4f(r,g,b,0.5);
-    DrawFilledCircle(270,350,80);
+    glPopMatrix();
+//    DrawFilledCircle(200,100,80);
+//    glColor4f(0.4,0.2,0.6,0.5);
+//    DrawFilledCircle(250,100,80);
+//    GLfloat r,g,b;
+//    HuePreservingBlend(0.1, 0.1, 0.4, 0.4, 0.2, 0.6, r, g, b);
+//    glColor4f(r,g,b,0.5);
+//    DrawFilledCircle(225,150,80);
 }
 
 
@@ -397,10 +450,6 @@ void reshape(int w, int h)
     UpdateCustomBlendViewport();
     UpdateGLBlendViewport();
     
-//    glViewport(0, 0, (GLsizei) w, (GLsizei) h);
-//    glMatrixMode(GL_PROJECTION);
-//    glLoadIdentity();
-//    glOrtho(0.0, w, h, 0.0, -10.0, 10.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
