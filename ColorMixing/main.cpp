@@ -214,7 +214,7 @@ void HSLtoRGB(GLfloat h,GLfloat s,GLfloat l,GLfloat &r,GLfloat &g,GLfloat &b){
             tempB -= 1;
         else if(tempB < 1)
             tempB += 1;
-       
+        
         // 6.
         /*
          Now we need to do up to 3 tests to select the correct formula for each color channel. Let’s start with Red.
@@ -262,21 +262,30 @@ void OppositeColor(GLfloat &r,GLfloat &g,GLfloat &b){
 
 void HuePreservingBlend(GLfloat r1,GLfloat g1,GLfloat b1,GLfloat r2,GLfloat g2,GLfloat b2,GLfloat &r3,GLfloat &g3,GLfloat &b3){
     
+    // keep a copy of original colors
+    
     if (EqualHue(r1, g1, b1, r2, g2, b2)) {
         r3 = r1 + r2;
         g3 = g1 + g2;
         b3 = b1 + b2;
     }else{
-        OppositeColor(r2, g2, b2);
-        r3 = r1 + r2;
-        g3 = g1 + g2;
-        b3 = b1 + b2;
+        GLfloat nr2 = r2;
+        GLfloat ng2 = g2;
+        GLfloat nb2 = b2;
+        OppositeColor(nr2, ng2, nb2);
+        
+        r3 = r1 + nr2;
+        g3 = g1 + ng2;
+        b3 = b1 + nb2;
      
         if (!EqualHue(r1, b1, g1, r3, g3, b3)) {
-            OppositeColor(r1, g1, b1);
-            r3 = r1 + r2;
-            g3 = g1 + g2;
-            b3 = b1 + b2;
+            GLfloat nr1 = r1;
+            GLfloat ng1 = g1;
+            GLfloat nb1 = b1;
+            OppositeColor(nr1, ng1, nb1);
+            r3 = nr1 + r2;
+            g3 = ng1 + g2;
+            b3 = nb1 + b2;
         }
     }
 }
@@ -297,7 +306,7 @@ void display(void)
     GLfloat r,g,b;
     HuePreservingBlend(0.1, 0.1, 0.4, 0.4, 0.2, 0.6, r, g, b);
     
-    glColor4f(r,g,b,0.2);
+    glColor4f(r,g,b,0.5);
     DrawFilledCircle(270,350,100);
     
     glFlush();
