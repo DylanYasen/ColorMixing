@@ -290,34 +290,117 @@ void HuePreservingBlend(GLfloat r1,GLfloat g1,GLfloat b1,GLfloat r2,GLfloat g2,G
     }
 }
 
-void display(void)
-{
-    glClear(GL_COLOR_BUFFER_BIT);
+void UpdateColorPickerViewport(){
+ 
+    // Set The Viewport To The Top Left.
+    glViewport (0, 0, width/2, height);
+    glMatrixMode (GL_PROJECTION);                       // Select The Projection Matrix
+    glLoadIdentity ();                          // Reset The Projection Matrix
+    // Set Up Ortho Mode To Fit 1/2 The Screen (Size Of A Viewport)
+    gluOrtho2D(0, width/2, height,0);
+}
+
+void UpdateCustomBlendViewport(){
+  
+    // Set The Viewport To The Top Right.  It Will Take Up Half The Screen Width And Height
+    glViewport (width/2, height/2, width/2, height/2);
+    glMatrixMode (GL_PROJECTION);                       // Select The Projection Matrix
+    glLoadIdentity ();                          // Reset The Projection Matrix
+    // Set Up Ortho Mode To Fit 1/4 The Screen (Size Of A Viewport)
+    gluOrtho2D(0, width/2, height/2,0);
+}
+
+void UpdateGLBlendViewport(){
     
+    // Set The Viewport To The Top Right.  It Will Take Up Half The Screen Width And Height
+    glViewport (width/2, 0, width/2, height/2);
+    glMatrixMode (GL_PROJECTION);                       // Select The Projection Matrix
+    glLoadIdentity ();                          // Reset The Projection Matrix
+    // Set Up Ortho Mode To Fit 1/4 The Screen (Size Of A Viewport)
+    gluOrtho2D(0, width/2, height/2,0);
+}
+
+void RenderColorPickerView(){
+    
+    // border line
+    glLineWidth(2.5);
+    glColor3f(1.0, 0.0, 0.0);
+    glBegin(GL_LINES);
+    glVertex3f(width/2,0,0);
+    glVertex3f(width/2,height,0);
+    glEnd();
+}
+
+void RenderCustomBlendView(){
+    
+    // border line
+    glLineWidth(2.5);
+    glColor3f(1.0, 0.0, 0.0);
+    glBegin(GL_LINES);
+    glVertex3f(0,height/2,0);
+    glVertex3f(width/2,height/2,0);
+    glEnd();
+ 
+}
+
+void RenderGLBlendView(){
+   
+   
     glEnable     (GL_BLEND);
     glBlendFunc  (GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);
-  
+    
     glColor4f(0.1,0.1,0.4,0.5);
-    DrawFilledCircle(200,250,100);
+    DrawFilledCircle(200,100,80);
     
     glColor4f(0.4,0.2,0.6,0.5);
-    DrawFilledCircle(340,250,100);
+    DrawFilledCircle(250,100,80);
     
     GLfloat r,g,b;
     HuePreservingBlend(0.1, 0.1, 0.4, 0.4, 0.2, 0.6, r, g, b);
     
     glColor4f(r,g,b,0.5);
-    DrawFilledCircle(270,350,100);
+    DrawFilledCircle(270,350,80);
+}
+
+
+void display(void)
+{
+    glClearColor(0.2, 0.5, 0.5, 0);
+    glClear(GL_COLOR_BUFFER_BIT);
     
+    // render 3 views
+    for (int i = 0; i < 3; i++) {
+        
+        if (i == 0){
+            UpdateColorPickerViewport();
+            RenderColorPickerView();
+        }
+        else if(i == 1){
+            UpdateCustomBlendViewport();
+            RenderCustomBlendView();
+        }
+        else{
+            UpdateGLBlendViewport();
+            RenderGLBlendView();
+        }
+    }
+    
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
     glFlush();
 }
 
 void reshape(int w, int h)
 {
-    glViewport(0, 0, (GLsizei) w, (GLsizei) h);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0.0, w, h, 0.0, -10.0, 10.0);
+    width = w; height =h;
+    UpdateColorPickerViewport();
+    UpdateCustomBlendViewport();
+    UpdateGLBlendViewport();
+    
+//    glViewport(0, 0, (GLsizei) w, (GLsizei) h);
+//    glMatrixMode(GL_PROJECTION);
+//    glLoadIdentity();
+//    glOrtho(0.0, w, h, 0.0, -10.0, 10.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
