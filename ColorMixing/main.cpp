@@ -298,24 +298,6 @@ GLfloat degrees(GLfloat radians){
     return radians * (180 / PI);
 }
 
-
-//def drawPartialCircle(pos=(0,0), radius=100):
-//with gx_begin(GL_TRIANGLE_FAN):
-//glColor3f(0,0,1)
-//glVertex2f(0,0)
-//for angle in range (90,185,5):
-//glColor3f(sin(radians(angle-90))*sqrt(2),cos(radians(angle-90))*sqrt(2),0)
-//glVertex2f(int(cos(radians(angle))*radius),int(sin(radians(angle))*radius))
-
-void DrawColorCircle(GLfloat r = 100){
-    glBegin(GL_TRIANGLE_FAN);
-    for (int i = 90; i < 185; i+=5) {
-        glColor3f(sinf(radians(i - 90))*sqrtf(2), cosf(radians(i-90))*sqrtf(2), 0);
-        glVertex2f(cosf(radians(i))*r, sinf(radians(i))*r);
-    }
-    glEnd();
-}
-
 void DrawQuad(GLfloat w,GLfloat h){
     glBegin(GL_QUADS);   //We want to draw a quad, i.e. shape with four sides
     glVertex2f(0, 0);            //Draw the four corners of the rectangle
