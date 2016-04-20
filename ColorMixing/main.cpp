@@ -22,6 +22,13 @@ int width = 800;
 int height = 800;
 #define PI 3.1415926
 
+// color vars
+// TODO: bind with user input
+GLfloat a = 0.5;
+GLfloat r1 = 0.3;GLfloat g1 = 0.6;GLfloat b1 = 0.1; // left quad
+GLfloat r4 = 0.6;GLfloat g4 = 0.2;GLfloat b4 = 0.5; // top quad
+GLfloat r6 = 0.1;GLfloat g6 = 0.9;GLfloat b6 = 0.8; // right quad
+
 /*
  HUE-PRESERVING BLENDING
  
@@ -33,47 +40,12 @@ int height = 800;
  assumes colors in RGB color space.
 */
 
-void DrawFilledCircle(GLfloat x,GLfloat y,GLfloat r){
-    int i;
-    int triangleAmount = 36;
-    
-    
-    GLfloat twicePi = 2.0f * PI;
-    
-    glBegin(GL_TRIANGLE_FAN);
-    
-    glVertex2f(x, y); // center of circle
-    for(i = 0; i <= triangleAmount;i++) {
-        glVertex2f(
-                   x + (r * cos(i *  twicePi / triangleAmount)),
-                   y + (r * sin(i * twicePi / triangleAmount))
-                   );
-    }
-    glEnd();
-}
-
-void DrawCircle(GLfloat x, GLfloat y, GLfloat r){
-    int i;
-    int lineAmount = 100;
-    
-    GLfloat twicePi = 2.0f * PI;
-    
-    glBegin(GL_LINE_LOOP);
-    for(i = 0; i <= lineAmount;i++) {
-        glVertex2f(
-                   x + (r * cos(i *  twicePi / lineAmount)),
-                   y + (r* sin(i * twicePi / lineAmount))
-                   );
-    }
-    glEnd();
-}
-
-void RGBtoHSL(GLfloat r,GLfloat g,GLfloat b,GLfloat &h,GLfloat &s,GLfloat &l){
+void RGBtoHSL(const GLfloat R,const GLfloat G,const GLfloat B,GLfloat &h,GLfloat &s,GLfloat &l){
     
     // Convert the RGB values to the range 0-1
-    r /= 255;
-    g /= 255;
-    b /= 255;
+    GLfloat r = R / 255;
+    GLfloat g = G / 255;
+    GLfloat b = B / 255;
     
     // Find the minimum and maximum values of R, G and B.
     GLfloat tempMin = fminf(r,g);
@@ -134,7 +106,7 @@ void RGBtoHSL(GLfloat r,GLfloat g,GLfloat b,GLfloat &h,GLfloat &s,GLfloat &l){
     l = lum;
 }
 
-GLfloat HSLtoRGBtestCond(float temp1,float temp2,GLfloat tempColorComponent){
+GLfloat HSLtoRGBtestCond(const float temp1,const float temp2,const GLfloat tempColorComponent){
     
     GLfloat colorChannelVal = 0;
     // test 1
@@ -161,13 +133,13 @@ GLfloat HSLtoRGBtestCond(float temp1,float temp2,GLfloat tempColorComponent){
     return colorChannelVal;
 }
 
-void HSLtoRGB(GLfloat h,GLfloat s,GLfloat l,GLfloat &r,GLfloat &g,GLfloat &b){
+void HSLtoRGB(const GLfloat H,const GLfloat S,const GLfloat L,GLfloat &r,GLfloat &g,GLfloat &b){
     /*
      1.
      if there is no Saturation it means that it’s a shade of grey. So in that case we just need to convert the Luminance and set R,G and B to that level.
      */
-    if(s == 0){
-        r = l * 255;
+    if(S == 0){
+        r = L * 255;
         g = r;
         b = r;
     }
@@ -177,22 +149,22 @@ void HSLtoRGB(GLfloat h,GLfloat s,GLfloat l,GLfloat &r,GLfloat &g,GLfloat &b){
         // 2.
         GLfloat temp1 = 0;
         // less than 0.5 = Luminance x (1.0+Saturation)
-        if (l < 0.5) {
-            temp1 = l * (1 + s);
+        if (L < 0.5) {
+            temp1 = L * (1 + S);
         }
         // temporary_1 = Luminance + Saturation – Luminance x Saturation
         else{
-            temp1 = l + s - l * s;
+            temp1 = L + S - L * S;
         }
         
         // 3.
         GLfloat temp2 = 0;
         // temporary_2 = 2 x Luminance – temporary_1
-        temp2 = 2 * l - temp1;
+        temp2 = 2 * L - temp1;
         
         // 4.
         // convert the 360 degrees in a circle to 1 by dividing the angle by 360.
-        h /= 360;
+        GLfloat h = H / 360;
         
         // 5.
         // temporary variable for each color channel
@@ -230,7 +202,7 @@ void HSLtoRGB(GLfloat h,GLfloat s,GLfloat l,GLfloat &r,GLfloat &g,GLfloat &b){
     }
 }
 
-bool EqualHue(GLfloat r1,GLfloat g1,GLfloat b1,GLfloat r2,GLfloat g2,GLfloat b2){
+bool EqualHue(const GLfloat r1,const GLfloat g1,const GLfloat b1,const GLfloat r2,const GLfloat g2,const GLfloat b2){
     GLfloat h1,s1,l1;
     RGBtoHSL(r1, g1, b1, h1, s1, l1);
     
@@ -248,7 +220,7 @@ bool EqualHue(GLfloat r1,GLfloat g1,GLfloat b1,GLfloat r2,GLfloat g2,GLfloat b2)
  the hue angle can be rotated by 180 degrees to obtain
  the opposite color.
  */
-void OppositeColor(GLfloat &r,GLfloat &g,GLfloat &b){
+void OppositeColor(GLfloat r, GLfloat g,GLfloat b){
     GLfloat h,s,l;
     RGBtoHSL(r, g, b, h, s, l);
     
@@ -260,7 +232,7 @@ void OppositeColor(GLfloat &r,GLfloat &g,GLfloat &b){
     HSLtoRGB(h, s, l, r, g, b);
 }
 
-void HuePreservingBlend(GLfloat r1,GLfloat g1,GLfloat b1,GLfloat r2,GLfloat g2,GLfloat b2,GLfloat &r3,GLfloat &g3,GLfloat &b3){
+void HuePreservingBlend(const GLfloat r1,const GLfloat g1,const GLfloat b1,const GLfloat r2,const GLfloat g2,const GLfloat b2,GLfloat &r3,GLfloat &g3,GLfloat &b3){
     
     // keep a copy of original colors
     
@@ -307,9 +279,6 @@ void DrawQuad(GLfloat w,GLfloat h){
     glEnd();
 }
 
-void DrawCutomQuads(GLfloat w,GLfloat h,GLfloat r1,GLfloat g1,GLfloat b1,GLfloat a1,GLfloat r2,GLfloat g2,GLfloat b2,GLfloat a2,GLfloat r3,GLfloat g3,GLfloat b3,GLfloat a3,GLfloat r4,GLfloat g4,GLfloat b4,GLfloat a4,GLfloat r5,GLfloat g5,GLfloat b5,GLfloat a5,GLfloat r6,GLfloat g6,GLfloat b6,GLfloat a6,GLfloat r7,GLfloat g7,GLfloat b7,GLfloat a7){
-}
-
 void UpdateColorPickerViewport(){
  
     // Set The Viewport To The Top Left.
@@ -353,6 +322,11 @@ void RenderColorPickerView(){
 
 void RenderCustomBlendView(){
     
+    // have to use this to make quads transparent
+    // but not using its blend func since there are no overlapping quads
+    glEnable     (GL_BLEND);
+    glBlendFunc  (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
     // border line
     glLineWidth(2.5);
     glColor3f(1.0, 0.0, 0.0);
@@ -364,11 +338,31 @@ void RenderCustomBlendView(){
     GLfloat w = 150;
     GLfloat h = 150;
     
+
+    // blend colros
+    // mixture of 1 4 6
+    GLfloat r2 = 0;GLfloat g2 = 0;GLfloat b2 = 0;
+    GLfloat rt = 0;GLfloat gt = 0;GLfloat bt = 0;
+    HuePreservingBlend(r1, g1, b1, r4, g4, b4, rt, gt, bt);
+    HuePreservingBlend(rt, gt, bt, r6, g6, b6, r2, g2, b2);
+    
+    // mixture of 1 4
+    GLfloat r3 = 0;GLfloat g3 = 0;GLfloat b3 = 0;
+    HuePreservingBlend(r1, g1, b1, r4, g4, g4, r3, g3, b3);
+    
+    // mixture of 4 6
+    GLfloat r5 = 0;GLfloat g5 = 0;GLfloat b5 = 0;
+    HuePreservingBlend(r4, g4, b4, r6, g6, g6, r5, g5, b5);
+    
+    // mixture of 1 6
+    GLfloat r7 = 0;GLfloat g7 = 0;GLfloat b7 = 0;
+    HuePreservingBlend(r1, g1, b1, r6, g6, g6, r7, g7, b7);
+    
     glPushMatrix();
-    glTranslatef(80, 80, 0);
+    glTranslatef(80, 100, 0);
     
     // 1
-    glColor3f(0, 1, 0);
+    glColor4f(r1,g1,b1,a);
     glBegin(GL_POLYGON);
     glVertex2i(0,0);
     glVertex2i(0,h);
@@ -383,7 +377,7 @@ void RenderCustomBlendView(){
     glEnd();
     
     // 2
-    glColor3f(1, 0, 0);
+    glColor4f(r2,g2,b2,a);
     glBegin(GL_POLYGON);
     glVertex2i(w/3*2,h/3);
     glVertex2i(w/3*2,h/3*2);
@@ -392,7 +386,7 @@ void RenderCustomBlendView(){
     glEnd();
     
     // 3
-    glColor3f(0, 0, 1);
+    glColor4f(r3,g3,b3,a);
     glBegin(GL_POLYGON);
     glVertex2i(w/3,0);
     glVertex2i(w/3,h/3*2);
@@ -407,7 +401,7 @@ void RenderCustomBlendView(){
     glEnd();
     
     // 4
-    glColor3f(1, 0, 1);
+    glColor4f(r4,g4,b4,a);
     glBegin(GL_POLYGON);
     glVertex2i(w/3,-h/3);
     glVertex2i(w/3,0);
@@ -422,7 +416,7 @@ void RenderCustomBlendView(){
     glEnd();
     
     // 5
-    glColor3f(1, 1, 1);
+    glColor4f(r5,g5,b5,a);
     glBegin(GL_POLYGON);
     glVertex2i(w,h/3);
     glVertex2i(w,h/3*2);
@@ -431,7 +425,7 @@ void RenderCustomBlendView(){
     glEnd();
     
     // 6
-    glColor3f(1, 1, 0);
+    glColor4f(r6,g6,b6,a);
     glBegin(GL_POLYGON);
     glVertex2i(w/3*2,h);
     glVertex2i(w/3*2,h+h/3);
@@ -452,7 +446,7 @@ void RenderCustomBlendView(){
     glEnd();
     
     // 7
-    glColor3f(0, 1, 1);
+    glColor4f(r7,g7,b7,a);
     glBegin(GL_POLYGON);
     glVertex2i(w/3*2,h/3*2);
     glVertex2i(w/3*2,h);
@@ -472,33 +466,25 @@ void RenderGLBlendView(){
     glPushMatrix();
     glTranslatef(-30, -30, 0);
     
+    glColor4f(r4,g4,b4,a);
     glPushMatrix();
     glTranslatef(150, 100, 0);
-    glColor4f(0.1,0.1,0.4,0.5);
     DrawQuad(150,150);
     glPopMatrix();
-    
+ 
+    glColor4f(r6,g6,b6,a);
     glPushMatrix();
     glTranslatef(200, 200, 0);
-    glColor4f(0.2,0.7,0.1,0.5);
     DrawQuad(150,150);
     glPopMatrix();
-    
+ 
+    glColor4f(r1,b1,g1,a);
     glPushMatrix();
     glTranslatef(100, 150, 0);
-    glColor4f(0.4,0.2,0.6,0.5);
     DrawQuad(150,150);
     glPopMatrix();
     
     glPopMatrix();
-    
-//    DrawFilledCircle(200,100,80);
-//    glColor4f(0.4,0.2,0.6,0.5);
-//    DrawFilledCircle(250,100,80);
-//    GLfloat r,g,b;
-//    HuePreservingBlend(0.1, 0.1, 0.4, 0.4, 0.2, 0.6, r, g, b);
-//    glColor4f(r,g,b,0.5);
-//    DrawFilledCircle(225,150,80);
 }
 
 
