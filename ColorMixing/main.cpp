@@ -318,6 +318,84 @@ void RenderColorPickerView(){
     glVertex3f(width/2,0,0);
     glVertex3f(width/2,height,0);
     glEnd();
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, 800, 800, 0, -1, 1);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glPushMatrix();
+        
+        glBegin(GL_TRIANGLES);
+            glColor3ub(255,0,0);
+            glVertex2f(100,50);
+            glColor3ub(0,255,0);
+            glVertex2f(50,150);
+            glColor3ub(0,0,255);
+            glVertex2f(150,150);
+        glEnd();
+    glPopMatrix();
+
+    glutSwapBuffers();
+}
+
+void mouse(int button, int state, int x, int y)
+{
+   // Save the left button state
+   if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+   {
+        mousex = glutGet( GLUT_WINDOW_WIDTH ) - x;
+        mousey = glutGet( GLUT_WINDOW_HEIGHT ) - y;
+
+        cout << mousex << ", " << mousey << endl;
+        //check if the position is inside of the triangle
+        //with 2d vectors (100,50); (50,150); (150,150)
+        //scale the ortho view build of each vertex by the size of the window
+        float A[2] = {width * (100.0 / 200.0), height * (50.0 / 200.0)};
+        float B[2] = {width * (50.0 / 200.0), height * (150.0 / 200.0)};
+        float C[2] = {width * (150.0 / 200.0), height * (150.0 / 200.0)};
+        float P[2] = {x, y};
+
+        //compute vectors in the triangle
+        float v0[2] = {C[0] - A[0], C[1] - A[1]};
+        float v1[2] = {B[0] - A[0], B[1] - A[1]};
+        float v2[2] = {P[0] - A[0], P[1] - A[1]};
+
+        //compute the dot products
+        float dot00 = dot(v0, v0);
+        float dot01 = dot(v0, v1);
+        float dot02 = dot(v0, v2);
+        float dot11 = dot(v1, v1);
+        float dot12 = dot(v1, v2);
+
+        //compute the barycentric coordinates
+        float invDenom = 1.0 / ( (dot00 * dot11) - (dot01 * dot01) );
+        cout << invDenom << endl;
+        float u = ( (dot11 * dot02) - (dot01 * dot12) ) * invDenom;
+        float v = ( (dot00 * dot12) - (dot01 * dot02) ) * invDenom;
+
+        cout << u << endl;
+        cout << v << endl;
+
+        if ( (u >= 0) && (v >= 0) && ((u+v) < 1) )
+        {
+            unsigned char pixel[4];
+
+            glReadPixels(mousex, mousey, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixel);
+            r4 = (int)pixel[0];
+            g4 = (int)pixel[2];
+            b4 = (int)pixel[1];
+            
+            cout << "R: " << (int)pixel[0] << endl;
+            cout << "G: " << (int)pixel[2] << endl;
+            cout << "B: " << (int)pixel[1] << endl;
+            cout << endl;
+        }
+      //mouseleftdown = (state == GLUT_DOWN);
+      //glutPostRedisplay();  // Left button has changed; redisplay!
+   }
 }
 
 void RenderCustomBlendView(){
@@ -536,15 +614,18 @@ void keyboard(unsigned char key, int x, int y)
     }
 }
 
+
+
 int main(int argc, char **argv)
 {
     glutInit(&argc, argv);
-    glutInitDisplayMode (GLUT_SINGLE | GLUT_RGBA);
+    glutInitDisplayMode (GLUT_RGBA | GLUT_DOUBLE);
     glutInitWindowSize (width, height);
     glutInitWindowPosition (100, 100);
     glutCreateWindow (argv[0]);
     
     glutDisplayFunc(display);
+    glutMouseFunc(mouse);
     glutReshapeFunc(reshape);
     glutKeyboardFunc (keyboard);
     glutMainLoop();
