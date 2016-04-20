@@ -307,6 +307,9 @@ void DrawQuad(GLfloat w,GLfloat h){
     glEnd();
 }
 
+void DrawCutomQuads(GLfloat w,GLfloat h,GLfloat r1,GLfloat g1,GLfloat b1,GLfloat a1,GLfloat r2,GLfloat g2,GLfloat b2,GLfloat a2,GLfloat r3,GLfloat g3,GLfloat b3,GLfloat a3,GLfloat r4,GLfloat g4,GLfloat b4,GLfloat a4,GLfloat r5,GLfloat g5,GLfloat b5,GLfloat a5,GLfloat r6,GLfloat g6,GLfloat b6,GLfloat a6,GLfloat r7,GLfloat g7,GLfloat b7,GLfloat a7){
+}
+
 void UpdateColorPickerViewport(){
  
     // Set The Viewport To The Top Left.
@@ -357,13 +360,113 @@ void RenderCustomBlendView(){
     glVertex3f(0,height/2,0);
     glVertex3f(width/2,height/2,0);
     glEnd();
- 
+    
+    GLfloat w = 150;
+    GLfloat h = 150;
+    
+    glPushMatrix();
+    glTranslatef(80, 80, 0);
+    
+    // 1
+    glColor3f(0, 1, 0);
+    glBegin(GL_POLYGON);
+    glVertex2i(0,0);
+    glVertex2i(0,h);
+    glVertex2i(w/3,h);
+    glVertex2i(w/3,0);
+    glEnd();
+    glBegin(GL_POLYGON);
+    glVertex2i(w/3,h/3*2);
+    glVertex2i(w/3,h);
+    glVertex2i(w/3*2,h);
+    glVertex2i(w/3*2,h/3*2);
+    glEnd();
+    
+    // 2
+    glColor3f(1, 0, 0);
+    glBegin(GL_POLYGON);
+    glVertex2i(w/3*2,h/3);
+    glVertex2i(w/3*2,h/3*2);
+    glVertex2i(w,h/3*2);
+    glVertex2i(w,h/3);
+    glEnd();
+    
+    // 3
+    glColor3f(0, 0, 1);
+    glBegin(GL_POLYGON);
+    glVertex2i(w/3,0);
+    glVertex2i(w/3,h/3*2);
+    glVertex2i(w/3*2,h/3*2);
+    glVertex2i(w/3*2,0);
+    glEnd();
+    glBegin(GL_POLYGON);
+    glVertex2i(w/3*2,0);
+    glVertex2i(w/3*2,h/3);
+    glVertex2i(w,h/3);
+    glVertex2i(w,0);
+    glEnd();
+    
+    // 4
+    glColor3f(1, 0, 1);
+    glBegin(GL_POLYGON);
+    glVertex2i(w/3,-h/3);
+    glVertex2i(w/3,0);
+    glVertex2i(w,0);
+    glVertex2i(w,-h/3);
+    glEnd();
+    glBegin(GL_POLYGON);
+    glVertex2i(w,-h/3);
+    glVertex2i(w,h/3);
+    glVertex2i(w + w/3,h/3);
+    glVertex2i(w + w/3,-h/3);
+    glEnd();
+    
+    // 5
+    glColor3f(1, 1, 1);
+    glBegin(GL_POLYGON);
+    glVertex2i(w,h/3);
+    glVertex2i(w,h/3*2);
+    glVertex2i(w + w/3,h/3*2);
+    glVertex2i(w + w/3,h/3);
+    glEnd();
+    
+    // 6
+    glColor3f(1, 1, 0);
+    glBegin(GL_POLYGON);
+    glVertex2i(w/3*2,h);
+    glVertex2i(w/3*2,h+h/3);
+    glVertex2i(w,h + h/3);
+    glVertex2i(w,h);
+    glEnd();
+    glBegin(GL_POLYGON);
+    glVertex2i(w,h/3*2);
+    glVertex2i(w,h+h/3);
+    glVertex2i(w+w/3,h+h/3);
+    glVertex2i(w+w/3,h/3*2);
+    glEnd();
+    glBegin(GL_POLYGON);
+    glVertex2i(w+w/3,h/3);
+    glVertex2i(w+w/3,h+h/3);
+    glVertex2i(w+w/3*2,h+h/3);
+    glVertex2i(w+w/3*2,h/3);
+    glEnd();
+    
+    // 7
+    glColor3f(0, 1, 1);
+    glBegin(GL_POLYGON);
+    glVertex2i(w/3*2,h/3*2);
+    glVertex2i(w/3*2,h);
+    glVertex2i(w,h);
+    glVertex2i(w,h/3*2);
+    glEnd();
+    
+    glPopMatrix();
 }
 
 void RenderGLBlendView(){
    
     glEnable     (GL_BLEND);
-    glBlendFunc  (GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);
+    glBlendFunc  (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
     // little offset
     glPushMatrix();
@@ -388,6 +491,7 @@ void RenderGLBlendView(){
     glPopMatrix();
     
     glPopMatrix();
+    
 //    DrawFilledCircle(200,100,80);
 //    glColor4f(0.4,0.2,0.6,0.5);
 //    DrawFilledCircle(250,100,80);
@@ -458,7 +562,6 @@ int main(int argc, char **argv)
     glutReshapeFunc(reshape);
     glutKeyboardFunc (keyboard);
     glutMainLoop();
-    
     
     return 0;
 }
