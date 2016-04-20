@@ -22,6 +22,9 @@ int width = 800;
 int height = 800;
 #define PI 3.1415926
 
+float mousex, mousey;
+
+bool mouseleftdown = false;
 // color vars
 // TODO: bind with user input
 GLfloat a = 0.5;
@@ -39,6 +42,11 @@ GLfloat r6 = 0.1;GLfloat g6 = 0.9;GLfloat b6 = 0.8; // right quad
  two input colors. The original version of those compositing operators
  assumes colors in RGB color space.
 */
+
+ float dot(float v0[], float v1[])
+{
+    return (v0[0] * v1[0]) + (v0[1] * v1[1]);
+}
 
 void RGBtoHSL(const GLfloat R,const GLfloat G,const GLfloat B,GLfloat &h,GLfloat &s,GLfloat &l){
     
@@ -387,7 +395,7 @@ void mouse(int button, int state, int x, int y)
             r4 = (int)pixel[0];
             g4 = (int)pixel[2];
             b4 = (int)pixel[1];
-            
+
             cout << "R: " << (int)pixel[0] << endl;
             cout << "G: " << (int)pixel[2] << endl;
             cout << "B: " << (int)pixel[1] << endl;
