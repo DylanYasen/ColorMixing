@@ -18,8 +18,10 @@
 #include <GL/glut.h>
 #endif
 
-int width = 800;
-int height = 800;
+using namespace std;
+
+float width = 800.0;
+float height = 800.0;
 #define PI 3.1415926
 
 float mousex, mousey;
@@ -223,7 +225,6 @@ bool EqualHue(const GLfloat r1,const GLfloat g1,const GLfloat b1,const GLfloat r
     return false;
 }
 
-
 /*
  the hue angle can be rotated by 180 degrees to obtain
  the opposite color.
@@ -327,15 +328,7 @@ void RenderColorPickerView(){
     glVertex3f(width/2,height,0);
     glEnd();
 
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0, 800, 800, 0, -1, 1);
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
     glPushMatrix();
-        
         glBegin(GL_TRIANGLES);
             glColor3ub(255,0,0);
             glVertex2f(100,50);
@@ -346,7 +339,6 @@ void RenderColorPickerView(){
         glEnd();
     glPopMatrix();
 
-    glutSwapBuffers();
 }
 
 void mouse(int button, int state, int x, int y)
@@ -354,17 +346,18 @@ void mouse(int button, int state, int x, int y)
    // Save the left button state
    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
    {
-        mousex = glutGet( GLUT_WINDOW_WIDTH ) - x;
-        mousey = glutGet( GLUT_WINDOW_HEIGHT ) - y;
+        mousex = x;
+        mousey = y;
 
         cout << mousex << ", " << mousey << endl;
         //check if the position is inside of the triangle
         //with 2d vectors (100,50); (50,150); (150,150)
         //scale the ortho view build of each vertex by the size of the window
-        float A[2] = {width * (100.0 / 200.0), height * (50.0 / 200.0)};
-        float B[2] = {width * (50.0 / 200.0), height * (150.0 / 200.0)};
-        float C[2] = {width * (150.0 / 200.0), height * (150.0 / 200.0)};
-        float P[2] = {x, y};
+        float A[2] = {static_cast<float>((width * (100.0 / 400.0))), static_cast<float>((height * (50.0 / 800.0)))};
+       cout << A[0] << ", " << A[1] << endl;
+        float B[2] = {static_cast<float>(width * (50.0 / 400.0)), static_cast<float>(height * (150.0 / 800.0))};
+        float C[2] = {static_cast<float>(width * (150.0 / 400.0)), static_cast<float>(height * (150.0 /800.0))};
+        float P[2] = {static_cast<float>(x), static_cast<float>(y)};
 
         //compute vectors in the triangle
         float v0[2] = {C[0] - A[0], C[1] - A[1]};
@@ -424,8 +417,7 @@ void RenderCustomBlendView(){
     GLfloat w = 150;
     GLfloat h = 150;
     
-
-    // blend colros
+    // blend colors
     // mixture of 1 4 6
     GLfloat r2 = 0;GLfloat g2 = 0;GLfloat b2 = 0;
     GLfloat rt = 0;GLfloat gt = 0;GLfloat bt = 0;
@@ -448,6 +440,7 @@ void RenderCustomBlendView(){
     glTranslatef(80, 100, 0);
     
     // 1
+    printf("%f %f %f %f\n",r1,g1,b1,a);
     glColor4f(r1,g1,b1,a);
     glBegin(GL_POLYGON);
     glVertex2i(0,0);
@@ -548,6 +541,7 @@ void RenderGLBlendView(){
     glEnable     (GL_BLEND);
     glBlendFunc  (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
+    
     // little offset
     glPushMatrix();
     glTranslatef(-30, -30, 0);
@@ -564,13 +558,15 @@ void RenderGLBlendView(){
     DrawQuad(150,150);
     glPopMatrix();
  
-    glColor4f(r1,b1,g1,a);
+    glColor4f(r1,g1,b1,a);
     glPushMatrix();
     glTranslatef(100, 150, 0);
     DrawQuad(150,150);
     glPopMatrix();
     
     glPopMatrix();
+    
+    printf("%f %f %f %f\n",r1,g1,b1,a);
 }
 
 
@@ -612,7 +608,6 @@ void reshape(int w, int h)
     glLoadIdentity();
 }
 
-
 void keyboard(unsigned char key, int x, int y)
 {
     switch (key) {
@@ -622,12 +617,10 @@ void keyboard(unsigned char key, int x, int y)
     }
 }
 
-
-
 int main(int argc, char **argv)
 {
     glutInit(&argc, argv);
-    glutInitDisplayMode (GLUT_RGBA | GLUT_DOUBLE);
+    glutInitDisplayMode (GLUT_RGBA | GLUT_SINGLE);
     glutInitWindowSize (width, height);
     glutInitWindowPosition (100, 100);
     glutCreateWindow (argv[0]);
