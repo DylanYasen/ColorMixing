@@ -30,6 +30,8 @@ bool mouseleftdown = false;
 
 bool inside = false;
 
+int clickCount = 0;
+
 // color vars
 // TODO: bind with user input
 GLfloat a = 0.5;
@@ -412,10 +414,30 @@ void mouse(int button, int state, int x, int y)
             unsigned char pixel[4];
 
             glReadPixels(mousex, mousey, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixel);
-            r4 = (float)pixel[0] / 255;
-            g4 = (float)pixel[1] / 255;
-            b4 = (float)pixel[2] / 255;
 
+            if (clickCount == 0) // then update the top square
+            {
+                r4 = (float)pixel[0] / 255;
+                g4 = (float)pixel[1] / 255;
+                b4 = (float)pixel[2] / 255;
+            }
+
+            if (clickCount == 1) // then update the left square
+            {
+                r1 = (float)pixel[0] / 255;
+                g1 = (float)pixel[1] / 255;
+                b1 = (float)pixel[2] / 255;
+            }
+
+            if (clickCount == 2) // then update the right square
+            {
+                r6 = (float)pixel[0] / 255;
+                g6 = (float)pixel[1] / 255;
+                b6 = (float)pixel[2] / 255;
+                clickCount = -1;
+            }
+            
+            clickCount += 1;
             cout << "R: " << (int)pixel[0] << endl;
             cout << "G: " << (int)pixel[1] << endl;
             cout << "B: " << (int)pixel[2] << endl;
