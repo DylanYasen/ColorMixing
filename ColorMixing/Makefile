@@ -1,6 +1,3 @@
-#!smake                                                                       
-#                                                                             
-#                                                                             
 
 MACHINE= $(shell uname -s)
 
@@ -20,7 +17,7 @@ INCLUDE= $(OPENGL_INC)
 LIBS= $(OPENGL_LIB)
 
 
-TARGETS = Animation
+TARGETS = ColorMixing
 
 SRCS = main.cpp
 
@@ -29,7 +26,7 @@ OBJS = $(SRCS:.cpp=.o)
 %.o: %.c
 	$(CXX) -c -o $@ $(COMPILER_FLAGS)  $< $(INCLUDE)
 
-Animation: main.o
+ColorMixing: main.o
 	$(CXX) $(COMPILER_FLAGS) $(LLDLIBS) main.o -o ColorMixing
 
 clean:
